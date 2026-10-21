@@ -1,0 +1,46 @@
+suite: external grafana provision
+templates:
+  - external-grafana-provision-job.yaml
+  - secrets.yaml
+release:
+  name: oncall
+tests:
+  - it: provision disabled -> no job
+    asserts:
+      - hasDocuments:
+          count: 0
+        template: external-grafana-provision-job.yaml
+
+  - it: provision with existing secret -> job points at Grafana 13.2.1
+    set:
+      grafana.enabled: false
+      base_url: oncall.example.com
+      base_url_protocol: https
+      externalGrafana:
+        url: https://grafana.example.com
+        version: "13.2.1"
+        provision: true
+        admin:
+          existingSecret: grafana-admin
+          userKey: admin-user
+          passwordKey: admin-password
+    asserts:
+      - isKind:
+          of: Job
+        template: external-grafana-provision-job.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[0].value
+          value: https://grafana.example.com
+        template: external-grafana-provision-job.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[2].value
+          value: "13.2.1"
+        template: external-grafana-provision-job.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[3].value
+          value: https://oncall.example.com
+        template: external-grafana-provision-job.yaml
+      - equal:
+          path: spec.template.spec.containers[0].env[6].valueFrom.secretKeyRef.name
+          value: grafana-admin
+        template: external-grafana-provision-job.yaml

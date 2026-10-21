@@ -6,4 +6,5 @@ registry: ctlptl-registry
 kindV1Alpha4Cluster:
   nodes:
     - role: control-plane
-      image: kindest/node:v1.27.11
+      # ingress-nginx 1.15.1 is supported on Kubernetes 1.31-1.35.
+      image: kindest/node:v1.32.11

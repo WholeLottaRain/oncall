@@ -2,7 +2,8 @@ kind: Cluster
 apiVersion: kind.x-k8s.io/v1alpha4
 nodes:
   - role: control-plane
-    image: kindest/node:v1.24.7
+    # ingress-nginx 1.15.1 is supported on Kubernetes 1.31-1.35.
+    image: kindest/node:v1.32.11
     extraPortMappings:
       - containerPort: 30001
         hostPort: 30001

@@ -5,7 +5,7 @@
    > Make sure ports 30001, 30002 (Grafana, optional) are available
 
    ```bash
-   kind create cluster --image kindest/node:v1.24.7 --config kind.yml
+   kind create cluster --image kindest/node:v1.32.11 --config kind.yml
    ```
 
 2. (Optional) Build oncall image locally and load it to kind cluster

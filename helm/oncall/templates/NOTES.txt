@@ -28,8 +28,21 @@
         kubectl get secret --namespace {{ .Release.Namespace }} {{ template "oncall.grafana.fullname" . }} -o jsonpath="{.data.admin-password}" | base64 --decode ; echo
 
 {{- else }}
-  🦎 Grafana was NOT installed as a part of this helm release. Open external Grafana, go to "Configuration" - "Plugins" and find Grafana OnCall plugin
-     NOTE: Make sure your external Grafana is available by the network for the containers installed by this release.
+  🦎 This release attaches to an existing Grafana {{ .Values.externalGrafana.version }} at {{ .Values.externalGrafana.url }}.
+     On that Grafana set:
+        [feature_toggles]
+        enable = externalServiceAccounts
+        accessControlOnCall = false
+        [auth]
+        managed_service_accounts_enabled = true
+     Install the grafana-oncall-app plugin before the engine starts.
+     The plugin must reach OnCall at {{ .Values.externalGrafana.onCallApiUrl | default (printf "%s://%s" .Values.base_url_protocol .Values.base_url) }}.
+     {{- if .Values.externalGrafana.provision }}
+     A post-install Job enables the plugin and calls its install endpoint with the admin secret.
+     {{- else }}
+     Set externalGrafana.provision=true and provide externalGrafana.admin to do that from this release.
+     {{- end }}
+     Grafana 13.2.1 does not include the 2026-10-13 fixes. Those are in 13.2.4 on the same line.
 {{- end }}
 
   🔗 Connect Grafana OnCall Plugin to Grafana OnCall backend:

@@ -28,7 +28,7 @@ x-env-files: &oncall-env-files
 
 x-env-vars: &oncall-env-vars
   BROKER_TYPE: ${BROKER_TYPE}
-  GRAFANA_API_URL: http://localhost:3000
+  GRAFANA_API_URL: ${GRAFANA_API_URL:-http://localhost:3000}
   GOOGLE_APPLICATION_CREDENTIALS: /etc/app/gcp_service_account.json
   FCM_PROJECT_ID: oncall-mobile-dev
 
@@ -323,7 +323,7 @@ services:
   grafana:
     container_name: grafana
     labels: *oncall-labels
-    image: "grafana/${GRAFANA_IMAGE:-grafana:latest}"
+    image: "grafana/${GRAFANA_IMAGE:-grafana:13.2.4}"
     restart: always
     environment:
       GF_SECURITY_ADMIN_USER: oncall

@@ -1,0 +1,122 @@
+{{- if and (not .Values.grafana.enabled) .Values.externalGrafana.provision }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ include "oncall.fullname" . }}-grafana-provision
+  labels:
+    {{- include "oncall.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "5"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
+spec:
+  backoffLimit: 5
+  ttlSecondsAfterFinished: 600
+  template:
+    metadata:
+      labels:
+        {{- include "oncall.labels" . | nindent 8 }}
+    spec:
+      restartPolicy: OnFailure
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "oncall.serviceAccountName" . }}
+      containers:
+        - name: provision
+          image: {{ include "oncall.engine.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - python
+            - -c
+            - |
+              import base64, json, os, time, urllib.error, urllib.request
+              grafana = os.environ["GRAFANA_URL"].rstrip("/")
+              public = os.environ.get("GRAFANA_PUBLIC_URL") or grafana
+              oncall = os.environ["ONCALL_API_URL"].rstrip("/")
+              expected = os.environ.get("GRAFANA_VERSION", "13.2.1")
+              def line(value):
+                  nums = []
+                  for piece in value.split(".")[:2]:
+                      digits = ""
+                      for ch in piece:
+                          if ch.isdigit():
+                              digits += ch
+                          else:
+                              break
+                      nums.append(int(digits or "0"))
+                  return tuple(nums)
+              basic = base64.b64encode(
+                  ("%s:%s" % (os.environ["GRAFANA_USER"], os.environ["GRAFANA_PASSWORD"])).encode()
+              ).decode()
+              def call(method, path, payload=None):
+                  data = None if payload is None else json.dumps(payload).encode()
+                  req = urllib.request.Request(grafana + path, data=data, method=method)
+                  req.add_header("Authorization", "Basic " + basic)
+                  if payload is not None:
+                      req.add_header("Content-Type", "application/json")
+                  with urllib.request.urlopen(req, timeout=20) as resp:
+                      body = resp.read().decode()
+                      return resp.status, body
+              deadline = time.time() + 180
+              version = ""
+              while True:
+                  try:
+                      _, body = call("GET", "/api/health")
+                      version = json.loads(body).get("version", "")
+                      break
+                  except Exception as exc:
+                      if time.time() > deadline:
+                          raise SystemExit("Grafana API is not reachable at %s: %s" % (grafana, exc))
+                      time.sleep(5)
+              if line(version) != line(expected):
+                  raise SystemExit("Grafana %s is not the %s line this release attaches to (expected %s)" % (version, ".".join(str(n) for n in line(expected)), expected))
+              settings = {
+                  "enabled": True,
+                  "jsonData": {
+                      "stackId": int(os.environ["ONCALL_STACK_ID"]),
+                      "orgId": int(os.environ["ONCALL_ORG_ID"]),
+                      "onCallApiUrl": oncall,
+                      "grafanaUrl": public,
+                  },
+              }
+              while True:
+                  try:
+                      call("POST", "/api/plugins/grafana-oncall-app/settings", settings)
+                      call("POST", "/api/plugins/grafana-oncall-app/resources/plugin/install")
+                      break
+                  except urllib.error.HTTPError as exc:
+                      detail = exc.read().decode(errors="replace")
+                      if time.time() > deadline:
+                          raise SystemExit("plugin provision failed: HTTP %s %s" % (exc.code, detail))
+                      time.sleep(5)
+                  except Exception as exc:
+                      if time.time() > deadline:
+                          raise SystemExit("plugin provision failed: %s" % exc)
+                      time.sleep(5)
+              print("attached OnCall to Grafana %s" % version)
+          env:
+            - name: GRAFANA_URL
+              value: {{ required "externalGrafana.url is required when grafana.enabled is false" .Values.externalGrafana.url | quote }}
+            - name: GRAFANA_PUBLIC_URL
+              value: {{ .Values.externalGrafana.publicUrl | default .Values.externalGrafana.url | quote }}
+            - name: GRAFANA_VERSION
+              value: {{ .Values.externalGrafana.version | default "13.2.1" | quote }}
+            - name: ONCALL_API_URL
+              value: {{ .Values.externalGrafana.onCallApiUrl | default (printf "%s://%s" .Values.base_url_protocol .Values.base_url) | quote }}
+            - name: ONCALL_STACK_ID
+              value: {{ .Values.externalGrafana.stackId | quote }}
+            - name: ONCALL_ORG_ID
+              value: {{ .Values.externalGrafana.orgId | quote }}
+            - name: GRAFANA_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalGrafana.admin.existingSecret | default (printf "%s-grafana-admin" (include "oncall.fullname" .)) }}
+                  key: {{ .Values.externalGrafana.admin.userKey | quote }}
+            - name: GRAFANA_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.externalGrafana.admin.existingSecret | default (printf "%s-grafana-admin" (include "oncall.fullname" .)) }}
+                  key: {{ .Values.externalGrafana.admin.passwordKey | quote }}
+{{- end }}

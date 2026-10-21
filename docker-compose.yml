@@ -12,7 +12,7 @@ x-environment: &oncall-environment
   CELERY_WORKER_MAX_TASKS_PER_CHILD: "100"
   CELERY_WORKER_SHUTDOWN_INTERVAL: "65m"
   CELERY_WORKER_BEAT_ENABLED: "True"
-  GRAFANA_API_URL: http://grafana:3000
+  GRAFANA_API_URL: ${GRAFANA_API_URL:-http://grafana:3000}
 
 services:
   engine:
@@ -86,7 +86,9 @@ services:
       - with_prometheus
 
   grafana:
-    image: "grafana/${GRAFANA_IMAGE:-grafana:latest}"
+    # Optional local Grafana. An existing 13.2.1 is used by leaving this profile off
+    # and setting GRAFANA_API_URL. 13.2.4 is the patched 13.2 build.
+    image: "grafana/${GRAFANA_IMAGE:-grafana:13.2.4}"
     restart: always
     ports:
       - "3000:3000"

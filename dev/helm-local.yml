@@ -26,7 +26,7 @@ redis:
   architecture: standalone # don't run replicas, just eats up resources
   image:
     repository: redis # the default, bitnami/redis does not support ARM64
-    tag: 7.0.5
+    tag: 8.2.6
   auth:
     password: oncallpassword
   master:

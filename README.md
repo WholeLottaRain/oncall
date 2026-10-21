@@ -12,6 +12,8 @@ Helm chart:
 - cert-manager v1.8.0 to v1.21.2: GHSA-8rvj-mm4h-c258, CVE-2025-68121
 - Prometheus chart 25.8.2 (v2.48.1) to 29.37.0 (v3.15.0): GHSA-8rm2-7qqf-34qm, GHSA-fw8g-cg8f-9j28
 - Grafana image 11.1.4 to 12.4.13: CVE-2025-4123, CVE-2026-17033, CVE-2026-15577, CVE-2026-33374, CVE-2026-93294
+- MariaDB image pinned to the 2026-10-15 MariaDB 12.0.2 index instead of `latest`
+- An existing Grafana 13.2.1 is attached with `helm/external-grafana.yaml`. The patched 13.2 build is 13.2.4.
 - Redis 6.2.7 to 8.2.6: CVE-2025-49844, CVE-2026-23479, CVE-2026-23631, CVE-2026-25243
 - RabbitMQ 3.12.0 to 3.13.7: CVE-2023-46118
 - PostgreSQL 14.5.0 to 14.18.0: CVE-2025-1094
@@ -55,9 +57,12 @@ Developer-friendly incident response with brilliant Slack integration.
 ## Getting Started
 
 > [!IMPORTANT]  
-> These instructions are for using Grafana 11 or newer. You must enable the feature toggle for
-> `externalServiceAccounts`. This is already done for the docker files and helm charts.  If you are running Grafana
-> separately see the Grafana documentation on how to enable this.
+> These instructions attach to Grafana 13.2.1 or install a local Grafana. You must enable
+> `externalServiceAccounts` and `auth.managed_service_accounts_enabled` on that Grafana, and leave
+> `accessControlOnCall` off. The docker files and the bundled Helm Grafana already do this.
+> To use a Grafana you already run, set `GRAFANA_API_URL` and do not enable the `with_grafana` profile.
+> Helm users: install with `helm/external-grafana.yaml` (`grafana.enabled=false`).
+> Grafana 13.2.1 does not include the 2026-10-13 fixes. Those are in 13.2.4.
 
 We prepared multiple environments:
 

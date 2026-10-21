@@ -1,0 +1,19 @@
+# Attach this release to an existing Grafana 13.2.x instance.
+# On that Grafana, before install:
+#   [feature_toggles]
+#   enable = externalServiceAccounts
+#   accessControlOnCall = false
+#   [auth]
+#   managed_service_accounts_enabled = true
+# The grafana-oncall-app plugin must already be installed there.
+# 13.2.1 does not include the 2026-10-13 fixes; those are in 13.2.4.
+grafana:
+  enabled: false
+externalGrafana:
+  url: https://grafana.example.com
+  version: "13.2.1"
+  provision: true
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password

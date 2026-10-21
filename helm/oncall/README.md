@@ -20,6 +20,7 @@ Here are the instructions on how to set up your own [ingress](#set-up-external-a
 
 - ensure you can run x86-64/amd64 workloads. arm64 architecture is currently not supported
 - cert-manager v1.21 requires Kubernetes 1.22 or newer
+- ingress-nginx 4.15.1 (controller v1.15.1) is supported on Kubernetes 1.31 through 1.35
 
 ## Install
 
@@ -363,6 +364,40 @@ externalRabbitmq:
   passwordKey: password
   usernameKey: username
 ```
+
+### Connect an existing Grafana 13.2.1
+
+Leave Grafana out of this release and point OnCall at the instance you already run.
+The plugin `grafana-oncall-app` has to be installed there, and Grafana needs:
+
+```ini
+[feature_toggles]
+enable = externalServiceAccounts
+accessControlOnCall = false
+
+[auth]
+managed_service_accounts_enabled = true
+```
+
+`externalServiceAccounts` works for a single Grafana organization. Create a Secret with the Grafana admin user and password, then install with `helm/external-grafana.yaml`:
+
+```yaml
+grafana:
+  enabled: false
+
+externalGrafana:
+  url: https://grafana.example.com
+  version: "13.2.1"
+  provision: true
+  admin:
+    existingSecret: grafana-admin
+    userKey: admin-user
+    passwordKey: admin-password
+```
+
+`url` is the address OnCall pods use. `onCallApiUrl` is the address Grafana uses to call OnCall; it defaults to `base_url_protocol://base_url`. With `provision: true` a post-install Job enables the plugin and calls its install endpoint.
+
+Grafana 13.2.1 does not include the 2026-10-13 fixes. Those are in 13.2.4. The Job accepts any 13.2 patch.
 
 ### Connect external Redis
 
