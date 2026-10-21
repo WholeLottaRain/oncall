@@ -59,14 +59,14 @@ jobs:
     runs-on: ubuntu-latest-16-cores
     services:
       rabbit_test:
-        image: rabbitmq:3.12.0
+        image: rabbitmq:3.13.7
         env:
           RABBITMQ_DEFAULT_USER: rabbitmq
           RABBITMQ_DEFAULT_PASS: rabbitmq
         ports:
           - 5672:5672
       mysql_test:
-        image: mysql:8.0.32
+        image: mysql:8.0.44
         env:
           MYSQL_DATABASE: oncall_local_dev
           MYSQL_ROOT_PASSWORD: local_dev_pwd
@@ -211,14 +211,14 @@ jobs:
       ONCALL_TESTING_RBAC_ENABLED: ${{ matrix.rbac_enabled }}
     services:
       rabbit_test:
-        image: rabbitmq:3.12.0
+        image: rabbitmq:3.13.7
         env:
           RABBITMQ_DEFAULT_USER: rabbitmq
           RABBITMQ_DEFAULT_PASS: rabbitmq
         ports:
           - 5672:5672
       mysql_test:
-        image: mysql:8.0.32
+        image: mysql:8.0.44
         env:
           MYSQL_DATABASE: oncall_local_dev
           MYSQL_ROOT_PASSWORD: local_dev_pwd
@@ -250,14 +250,14 @@ jobs:
       ONCALL_TESTING_RBAC_ENABLED: ${{ matrix.rbac_enabled }}
     services:
       rabbit_test:
-        image: rabbitmq:3.12.0
+        image: rabbitmq:3.13.7
         env:
           RABBITMQ_DEFAULT_USER: rabbitmq
           RABBITMQ_DEFAULT_PASS: rabbitmq
         ports:
           - 5672:5672
       postgresql_test:
-        image: postgres:14.4
+        image: postgres:14.19
         env:
           POSTGRES_DB: oncall_local_dev
           POSTGRES_PASSWORD: local_dev_pwd
@@ -294,7 +294,7 @@ jobs:
       ONCALL_TESTING_RBAC_ENABLED: ${{ matrix.rbac_enabled }}
     services:
       redis_test:
-        image: redis:7.0.15
+        image: redis:8.2.6
         ports:
           - 6379:6379
         options: >-

@@ -19,7 +19,7 @@ Here are the instructions on how to set up your own [ingress](#set-up-external-a
 ### Cluster requirements
 
 - ensure you can run x86-64/amd64 workloads. arm64 architecture is currently not supported
-- kubernetes version 1.25+ is not supported, if cert-manager is enabled
+- cert-manager v1.21 requires Kubernetes 1.22 or newer
 
 ## Install
 

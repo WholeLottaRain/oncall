@@ -1,11 +1,28 @@
-# 🚨 Archived: Grafana OnCall OSS 🚨
+# Grafana OnCall
 
-On 2025-03-11 Grafana OnCall (OSS) entered maintenance mode and was archived on 2026-03-24.
+Grafana OnCall OSS is maintained again. This tree includes security updates for the Helm chart, Docker Compose files, and CI images.
 
-For users seeking a fully supported and actively maintained alternative,
-**Grafana Cloud IRM** offers a modern approach to incident response and on-call management.
+## Security fixes
 
-- [Grafana Cloud IRM documentation](https://grafana.com/docs/grafana-cloud/alerting-and-irm/irm/)
+Bundled dependencies below were moved off versions affected by these advisories.
+
+Helm chart:
+
+- ingress-nginx 4.1.4 to 4.15.1 (controller v1.15.1): CVE-2025-1974, CVE-2025-1097, CVE-2025-1098, CVE-2025-24513, CVE-2025-24514, CVE-2026-3288
+- cert-manager v1.8.0 to v1.21.2: GHSA-8rvj-mm4h-c258, CVE-2025-68121
+- Prometheus chart 25.8.2 (v2.48.1) to 29.37.0 (v3.15.0): GHSA-8rm2-7qqf-34qm, GHSA-fw8g-cg8f-9j28
+- Grafana image 11.1.4 to 12.4.13: CVE-2025-4123, CVE-2026-17033, CVE-2026-15577, CVE-2026-33374, CVE-2026-93294
+- Redis 6.2.7 to 8.2.6: CVE-2025-49844, CVE-2026-23479, CVE-2026-23631, CVE-2026-25243
+- RabbitMQ 3.12.0 to 3.13.7: CVE-2023-46118
+- PostgreSQL 14.5.0 to 14.18.0: CVE-2025-1094
+
+Docker Compose and CI images:
+
+- Redis 7.0.15 to 8.2.6: CVE-2025-49844, CVE-2026-23479
+- RabbitMQ 3.12.0 to 3.13.7: CVE-2023-46118
+- MySQL 8.0.32 to 8.0.44: CVE-2025-53040, CVE-2025-53042, CVE-2025-53044, CVE-2025-53045, CVE-2025-53053, CVE-2025-53054, CVE-2025-53062, CVE-2025-53069
+- PostgreSQL 14.4 to 14.19: CVE-2025-1094
+- Prometheus to v3.15.0: GHSA-8rm2-7qqf-34qm, GHSA-fw8g-cg8f-9j28
 
 ## Grafana OnCall
 

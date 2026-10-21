@@ -55,7 +55,8 @@ grafana:
   replicas: 1
   extraInitContainers:
     - name: create-db-if-not-exists
-      image: mysql:8.0.32
+      # 8.0.32 is missing later 8.0 security releases.
+      image: mysql:8.0.44
       command:
         # yamllint disable rule:line-length
         [

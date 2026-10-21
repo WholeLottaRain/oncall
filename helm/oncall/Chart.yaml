@@ -6,7 +6,8 @@ version: 1.15.6
 appVersion: v1.15.6
 dependencies:
   - name: cert-manager
-    version: v1.8.0
+    # v1.8.0 is affected by GHSA-8rvj-mm4h-c258 and CVE-2025-68121.
+    version: v1.21.2
     repository: https://charts.jetstack.io
     condition: cert-manager.enabled
   - name: mariadb
@@ -30,10 +31,15 @@ dependencies:
     repository: https://grafana.github.io/helm-charts
     condition: grafana.enabled
   - name: ingress-nginx
-    version: 4.1.4
+    # 4.1.4 ships a controller older than 1.11.5. That is affected by
+    # CVE-2025-1974, CVE-2025-1097, CVE-2025-1098, CVE-2025-24513,
+    # CVE-2025-24514 and CVE-2026-3288. 4.15.1 ships controller v1.15.1.
+    version: 4.15.1
     repository: https://kubernetes.github.io/ingress-nginx
     condition: ingress-nginx.enabled
   - name: prometheus
-    version: 25.8.2
+    # 25.8.2 ships Prometheus 2.48.1, affected by GHSA-8rm2-7qqf-34qm
+    # and GHSA-fw8g-cg8f-9j28. 29.37.0 ships Prometheus v3.15.0.
+    version: 29.37.0
     repository: https://prometheus-community.github.io/helm-charts
     condition: prometheus.enabled

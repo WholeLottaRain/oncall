@@ -475,8 +475,12 @@ ingress:
 # Whether to install ingress controller
 ingress-nginx:
   enabled: true
+  controller:
+    # CVE-2025-1974 and CVE-2026-3288: do not let Ingress objects inject nginx config.
+    allowSnippetAnnotations: false
 
-# Install cert-manager as a part of the release
+# Install cert-manager as a part of the release.
+# Chart v1.21.2 fixes GHSA-8rvj-mm4h-c258 and CVE-2025-68121 (see Chart.yaml).
 cert-manager:
   enabled: true
   # Instal CRD resources
@@ -551,6 +555,12 @@ postgresql:
   auth:
     database: oncall
     existingSecret:
+  # Chart default is PostgreSQL 14.5.0. 14.18 includes the 14.x fixes
+  # through CVE-2025-1094 and keeps the Bitnami entrypoint and secret keys.
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/postgresql
+    tag: 14.18.0-debian-12-r0
 
 # Make sure to create the database with the following parameters:
 # CREATE DATABASE oncall WITH ENCODING UTF8;
@@ -580,6 +590,12 @@ rabbitmq:
   enabled: true
   auth:
     existingPasswordSecret:
+  # Chart default is RabbitMQ 3.12.0 (CVE-2023-46118). 3.13.7 is the newest
+  # public Bitnami 3.13 image and still uses the rabbitmq-password secret key.
+  image:
+    registry: docker.io
+    repository: bitnamilegacy/rabbitmq
+    tag: 3.13.7-debian-12-r5
 
 broker:
   type: rabbitmq
@@ -604,6 +620,21 @@ redis:
   enabled: true
   auth:
     existingSecret:
+  # Chart default is Redis 6.2.7, affected by CVE-2025-49844, CVE-2026-23479,
+  # CVE-2026-23631 and CVE-2026-25243. redis:8.2.6 includes those fixes.
+  # Standalone keeps the "<release>-redis-master" service this chart connects to.
+  # The official image has no Bitnami start script, so the server is started directly.
+  image:
+    registry: docker.io
+    repository: redis
+    tag: 8.2.6
+  architecture: standalone
+  master:
+    command:
+      - /bin/sh
+      - -c
+    args:
+      - exec redis-server --requirepass "$REDIS_PASSWORD" --appendonly yes --dir /data
 
 externalRedis:
   protocol:
@@ -632,6 +663,10 @@ externalRedis:
 # It is recommended to host it separately from this release
 grafana:
   enabled: true
+  # Chart 8.4.6 defaults to Grafana 11.1.4 (CVE-2025-4123, CVE-2026-17033).
+  # 12.4.13 also includes the 2026-10-13 fixes: CVE-2026-15577, CVE-2026-33374, CVE-2026-93294.
+  image:
+    tag: "12.4.13"
   grafana.ini:
     server:
       domain: helm-testing-grafana
@@ -722,6 +757,7 @@ ui:
   env: {}
 
 prometheus:
+  # Chart 29.37.0 ships Prometheus v3.15.0 (GHSA-8rm2-7qqf-34qm, GHSA-fw8g-cg8f-9j28).
   enabled: false
   # extraScrapeConfigs: |
   #   - job_name: 'oncall-exporter'
