@@ -29,7 +29,8 @@ RUN uv python pin 3.13.11
 # TODO: figure out how to get this to work.. see comment in .github/workflows/e2e-tests.yml
 # https://stackoverflow.com/a/71846527
 # RUN --mount=type=cache,target=/root/.cache/pip,from=pip_cache pip install -r requirements.txt
-RUN uv pip install --system -r requirements.txt
+# uv's bundled CA store does not trust the current GitHub Sectigo chain.
+RUN UV_SYSTEM_CERTS=true uv pip install --system -r requirements.txt
 
 # we intentionally have two COPY commands, this is to have the requirements.txt in a separate build step
 # which only invalidates when the requirements.txt actually changes. This avoids having to unneccasrily reinstall deps (which is time-consuming)
@@ -62,13 +63,13 @@ RUN apk add sqlite mysql-client postgresql-client
 # TODO: figure out how to get this to work.. see comment in .github/workflows/e2e-tests.yml
 # https://stackoverflow.com/a/71846527
 # RUN --mount=type=cache,target=/root/.cache/pip,from=pip_cache pip install -r requirements-dev.txt
-RUN uv pip install --system -r requirements-dev.txt
+RUN UV_SYSTEM_CERTS=true uv pip install --system -r requirements-dev.txt
 
 FROM dev AS dev-enterprise
 # TODO: figure out how to get this to work.. see comment in .github/workflows/e2e-tests.yml
 # https://stackoverflow.com/a/71846527
 # RUN --mount=type=cache,target=/root/.cache/pip,from=pip_cache pip install -r requirements-enterprise-docker.txt
-RUN uv pip install --system -r requirements-enterprise-docker.txt
+RUN UV_SYSTEM_CERTS=true uv pip install --system -r requirements-enterprise-docker.txt
 
 FROM base AS prod
 
