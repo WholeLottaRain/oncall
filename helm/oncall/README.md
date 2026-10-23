@@ -1,5 +1,7 @@
 # Grafana OnCall Helm Chart
 
+> Unofficial fork of the Grafana OnCall chart. Grafana Labs does not maintain or endorse it. The goal is to keep OnCall working with current Grafana releases and to carry security fixes for the dependencies shipped here. New functionality may be added later.
+
 This Grafana OnCall Chart is the best way to operate Grafana OnCall on Kubernetes.
 It will deploy Grafana OnCall engine and celery workers, along with RabbitMQ cluster, Redis Cluster, and MySQL 5.7 database.
 It will also deploy cert manager and nginx ingress controller, as Grafana OnCall backend might need to be externally available

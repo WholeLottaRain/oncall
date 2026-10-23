@@ -1,6 +1,6 @@
 apiVersion: v2
 name: oncall
-description: Developer-friendly incident response with brilliant Slack integration
+description: Unofficial fork of Grafana OnCall. Keeps the chart on current Grafana releases and security-fixed dependencies. New functionality may be added later.
 type: application
 version: 1.15.6
 appVersion: v1.15.6

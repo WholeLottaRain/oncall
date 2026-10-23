@@ -1,6 +1,10 @@
 # Grafana OnCall
 
-Grafana OnCall OSS is maintained again. This tree includes security updates for the Helm chart, Docker Compose files, and CI images.
+> Unofficial fork of [Grafana OnCall OSS](https://github.com/grafana/oncall). Grafana Labs does not maintain or endorse this repository.
+>
+> The goal is to keep OnCall working with current Grafana releases and to carry security fixes for the images and Helm dependencies shipped here. New functionality may be added later.
+
+This tree includes security updates for the Helm chart, Docker Compose files, and CI images.
 
 ## Security fixes
 
