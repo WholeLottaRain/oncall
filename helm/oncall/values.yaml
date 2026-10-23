@@ -671,9 +671,10 @@ externalRedis:
 grafana:
   enabled: true
   # Chart 8.4.6 defaults to Grafana 11.1.4 (CVE-2025-4123, CVE-2026-17033).
-  # 12.4.13 also includes the 2026-10-13 fixes: CVE-2026-15577, CVE-2026-33374, CVE-2026-93294.
+  # 13.2.4 includes the 2026-10-13 fixes: CVE-2026-15577, CVE-2026-33374,
+  # CVE-2026-93294, CVE-2026-95502 and CVE-2026-92539.
   image:
-    tag: "12.4.13"
+    tag: "13.2.4"
   grafana.ini:
     server:
       domain: helm-testing-grafana
@@ -701,16 +702,15 @@ grafana:
       subPath: grafana-oncall-app-provisioning.yaml
 
 # Existing Grafana. Used when grafana.enabled is false.
-# Grafana 13.2.1 still needs the externalServiceAccounts toggle and
-# auth.managed_service_accounts_enabled. The 2026-10-13 fixes for this
-# line are in 13.2.4; this release still attaches to a 13.2.1 instance.
+# 13.2.4 is the minimum 13.2 build with the 2026-10-13 fixes.
+# externalServiceAccounts and auth.managed_service_accounts_enabled stay required.
 externalGrafana:
   # API URL reachable from OnCall pods. Required when grafana.enabled is false.
   # Example: https://grafana.mydomain.com
   url:
   # URL stored in the plugin as grafanaUrl. Defaults to url.
   publicUrl:
-  version: "13.2.1"
+  version: "13.2.4"
   # Create a Job that enables grafana-oncall-app and points it at this release.
   # The plugin must already be installed on the existing Grafana.
   provision: false

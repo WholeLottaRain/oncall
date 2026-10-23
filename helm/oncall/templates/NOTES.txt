@@ -42,7 +42,7 @@
      {{- else }}
      Set externalGrafana.provision=true and provide externalGrafana.admin to do that from this release.
      {{- end }}
-     Grafana 13.2.1 does not include the 2026-10-13 fixes. Those are in 13.2.4 on the same line.
+     The Job requires Grafana {{ .Values.externalGrafana.version }}. 13.2.4 includes the 2026-10-13 fixes.
 {{- end }}
 
   🔗 Connect Grafana OnCall Plugin to Grafana OnCall backend:

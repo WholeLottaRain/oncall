@@ -35,10 +35,10 @@ spec:
               grafana = os.environ["GRAFANA_URL"].rstrip("/")
               public = os.environ.get("GRAFANA_PUBLIC_URL") or grafana
               oncall = os.environ["ONCALL_API_URL"].rstrip("/")
-              expected = os.environ.get("GRAFANA_VERSION", "13.2.1")
-              def line(value):
+              expected = os.environ.get("GRAFANA_VERSION", "13.2.4")
+              def parts(value):
                   nums = []
-                  for piece in value.split(".")[:2]:
+                  for piece in value.split(".")[:3]:
                       digits = ""
                       for ch in piece:
                           if ch.isdigit():
@@ -46,6 +46,8 @@ spec:
                           else:
                               break
                       nums.append(int(digits or "0"))
+                  while len(nums) < 3:
+                      nums.append(0)
                   return tuple(nums)
               basic = base64.b64encode(
                   ("%s:%s" % (os.environ["GRAFANA_USER"], os.environ["GRAFANA_PASSWORD"])).encode()
@@ -70,8 +72,8 @@ spec:
                       if time.time() > deadline:
                           raise SystemExit("Grafana API is not reachable at %s: %s" % (grafana, exc))
                       time.sleep(5)
-              if line(version) != line(expected):
-                  raise SystemExit("Grafana %s is not the %s line this release attaches to (expected %s)" % (version, ".".join(str(n) for n in line(expected)), expected))
+              if parts(version) < parts(expected):
+                  raise SystemExit("Grafana %s is older than %s. 13.2.4 includes the 2026-10-13 fixes" % (version, expected))
               settings = {
                   "enabled": True,
                   "jsonData": {
@@ -102,7 +104,7 @@ spec:
             - name: GRAFANA_PUBLIC_URL
               value: {{ .Values.externalGrafana.publicUrl | default .Values.externalGrafana.url | quote }}
             - name: GRAFANA_VERSION
-              value: {{ .Values.externalGrafana.version | default "13.2.1" | quote }}
+              value: {{ .Values.externalGrafana.version | default "13.2.4" | quote }}
             - name: ONCALL_API_URL
               value: {{ .Values.externalGrafana.onCallApiUrl | default (printf "%s://%s" .Values.base_url_protocol .Values.base_url) | quote }}
             - name: ONCALL_STACK_ID

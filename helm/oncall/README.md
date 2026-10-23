@@ -365,7 +365,7 @@ externalRabbitmq:
   usernameKey: username
 ```
 
-### Connect an existing Grafana 13.2.1
+### Connect an existing Grafana 13.2.4
 
 Leave Grafana out of this release and point OnCall at the instance you already run.
 The plugin `grafana-oncall-app` has to be installed there, and Grafana needs:
@@ -387,7 +387,7 @@ grafana:
 
 externalGrafana:
   url: https://grafana.example.com
-  version: "13.2.1"
+  version: "13.2.4"
   provision: true
   admin:
     existingSecret: grafana-admin
@@ -397,7 +397,7 @@ externalGrafana:
 
 `url` is the address OnCall pods use. `onCallApiUrl` is the address Grafana uses to call OnCall; it defaults to `base_url_protocol://base_url`. With `provision: true` a post-install Job enables the plugin and calls its install endpoint.
 
-Grafana 13.2.1 does not include the 2026-10-13 fixes. Those are in 13.2.4. The Job accepts any 13.2 patch.
+The Job refuses Grafana older than 13.2.4. That build includes the 2026-10-13 fixes: CVE-2026-15577, CVE-2026-33374, CVE-2026-93294, CVE-2026-95502 and CVE-2026-92539.
 
 ### Connect external Redis
 

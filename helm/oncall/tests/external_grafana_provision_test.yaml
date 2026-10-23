@@ -11,14 +11,14 @@ tests:
           count: 0
         template: external-grafana-provision-job.yaml
 
-  - it: provision with existing secret -> job points at Grafana 13.2.1
+  - it: provision with existing secret -> job points at Grafana 13.2.4
     set:
       grafana.enabled: false
       base_url: oncall.example.com
       base_url_protocol: https
       externalGrafana:
         url: https://grafana.example.com
-        version: "13.2.1"
+        version: "13.2.4"
         provision: true
         admin:
           existingSecret: grafana-admin
@@ -34,7 +34,7 @@ tests:
         template: external-grafana-provision-job.yaml
       - equal:
           path: spec.template.spec.containers[0].env[2].value
-          value: "13.2.1"
+          value: "13.2.4"
         template: external-grafana-provision-job.yaml
       - equal:
           path: spec.template.spec.containers[0].env[3].value

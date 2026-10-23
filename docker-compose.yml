@@ -86,8 +86,8 @@ services:
       - with_prometheus
 
   grafana:
-    # Optional local Grafana. An existing 13.2.1 is used by leaving this profile off
-    # and setting GRAFANA_API_URL. 13.2.4 is the patched 13.2 build.
+    # Optional local Grafana. An existing instance is used by leaving this profile
+    # off and setting GRAFANA_API_URL. 13.2.4 includes the 2026-10-13 fixes.
     image: "grafana/${GRAFANA_IMAGE:-grafana:13.2.4}"
     restart: always
     ports:
